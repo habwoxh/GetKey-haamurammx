@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfernoModz - Get Key System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-blue: #007bff;
+            --success-green: #d4edda;
+            --text-green: #155724;
+            --bg-light: #f4f7f6;
+            --white: #ffffff;
+            --gray-text: #6c757d;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+        body {
+            background-color: var(--bg-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: all 0.5s ease;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* --- HALAMAN SETUP --- */
+        #setup-page { padding: 30px 20px; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--gray-text);
+            margin-bottom: 8px;
+        }
+
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .form-group select:focus { border-color: var(--primary-blue); }
+
+        .get-key-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+        }
+
+        /* --- HALAMAN RESULT (Sesuai Foto) --- */
+        #result-page { display: none; animation: slideUp 0.5s ease; }
+
+        .success-box {
+            background-color: var(--success-green);
+            color: var(--text-green);
+            margin: 20px;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        .success-box i { font-size: 2rem; margin-bottom: 10px; display: block; }
+
+        .details-header {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: 600;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .main-content { padding: 20px; }
+
+        .key-display-wrapper {
+            display: flex;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 15px 0 20px;
+        }
+
+        .key-input {
+            flex: 1; padding: 12px; border: none; outline: none;
+            font-weight: 600; text-align: center; font-size: 1.1rem;
+        }
+
+        .copy-btn {
+            background: #fff; border: none; border-left: 1px solid #ddd;
+            padding: 0 15px; cursor: pointer; color: var(--primary-blue);
+        }
+
+        .stats-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #fdfdfd; border: 1px solid #eee;
+            padding: 15px; border-radius: 8px; text-align: center;
+        }
+
+        .stat-card i { color: var(--primary-blue); margin-bottom: 5px; }
+        .stat-card span { display: block; font-size: 0.7rem; color: var(--gray-text); text-transform: uppercase; }
+        .stat-card p { font-weight: 600; font-size: 0.9rem; }
+
+        .status-footer {
+            background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; padding: 15px;
+        }
+
+        .status-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.8rem; }
+        .active-badge { background: #28a745; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; }
+
+        /* Animations */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Loading Overlay */
+        #loading {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.9);
+            z-index: 999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .spinner {
+            width: 40px; height: 40px; border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-blue);
+            border-radius: 50%; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div id="loading">
+        <div class="spinner"></div>
+        <p style="margin-top: 15px; font-weight: 600;">Redirecting to links...</p>
+    </div>
+
+    <div class="container">
+        <div class="navbar">
+            <h2><i class="fas fa-box"></i> HamuraMz Getkey</h2>
+            <i class="fas fa-bars"></i>
+        </div>
+
+        <div id="setup-page">
+            <div class="form-group">
+                <label>Game Select :</label>
+                <select id="selectGame">
+                    <option value="Free Fire">Free Fire</option>
+                    <option value="Mobile Legends">Mobile Legends</option>
+                    <option value="PUBG Mobile">PUBG Mobile</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Device :</label>
+                <select id="selectDevice">
+                    <option value="1 Device">1 Device</option>
+                    <option value="2 Devices">2 Devices</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Days :</label>
+                <select id="selectDays">
+                    <option value="Random">-- Random Days --</option>
+                    <option value="1 Day">1 Day</option>
+                    <option value="7 Days">7 Days</option>
+                    <option value="30 Days">30 Days</option>
+                    <option value="60 Days">60 Days</option>
+                </select>
+            </div>
+
+            <button class="get-key-btn" onclick="startProcess()">Get Key</button>
+        </div>
+
+        <div id="result-page">
+            <div class="success-box">
+                <i class="fas fa-check-circle"></i>
+                <h3>Key Generated!</h3>
+                <p>Your free key has been generated and is ready to use.</p>
+            </div>
+
+            <div class="details-header">
+                <i class="fas fa-key"></i> Key Details
+            </div>
+
+            <div class="main-content">
+                <p style="text-align: center; font-size: 0.8rem; color: var(--gray-text);">YOUR KEY</p>
+                <div class="key-display-wrapper">
+                    <input type="text" id="resKey" class="key-input" readonly>
+                    <button class="copy-btn" onclick="copyKey()"><i class="far fa-clipboard"></i></button>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i class="fas fa-gamepad"></i>
+                        <span>GAME</span>
+                        <p id="resGame">--</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="far fa-calendar-alt"></i>
+                        <span>DURATION</span>
+                        <p id="resDays">--</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>DEVICES</span>
+                        <p id="resDevice">--</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-gem"></i>
+                        <span>TYPE</span>
+                        <p><span style="background:#6c757d; color:white; padding:2px 8px; border-radius:4px; font-size:0.7rem;">Free</span></p>
+                    </div>
+                </div>
+
+                <div class="status-footer">
+                    <div class="status-row"><span>Status:</span> <span class="active-badge">Active</span></div>
+                    <div class="status-row"><span>Created:</span> <span id="resDate">--</span></div>
+                    <div class="status-row"><span>Provider:</span> <span style="color:var(--primary-blue)">HamuraMZ</span></div>
+                </div>
+                
+                <button class="get-key-btn" style="margin-top:20px; background:#6c757d;" onclick="location.reload()">Generate Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function startProcess() {
+            const loading = document.getElementById('loading');
+            loading.style.display = 'flex';
+
+            // SIMULASI: Ganti "https://google.com" dengan link shortlink kamu (seperti tinylink/duitcc dll)
+            const shortlink = "https://sub4unlock.co/uxdI07X"; 
+            
+            // Buka link di tab baru
+            window.open(shortlink, '_blank');
+
+            // Setelah 3 detik (seolah-olah user sudah melewati link), tampilkan hasil
+            setTimeout(() => {
+                showResult();
+                loading.style.display = 'none';
+            }, 3000);
+        }
+
+        function showResult() {
+            // Ambil data dari input
+            const game = document.getElementById('selectGame').value;
+            const device = document.getElementById('selectDevice').value;
+            let days = document.getElementById('selectDays').value;
+
+            // Jika pilih random
+            if(days === "Random") {
+                days = Math.floor(Math.random() * 60) + 1 + " Days";
+            }
+
+            // Generate Key Acak
+            const randomKey = "2in5" + Math.random().toString(36).substring(2, 10);
+
+            // Masukkan data ke halaman hasil
+            document.getElementById('resGame').innerText = game;
+            document.getElementById('resDevice').innerText = device;
+            document.getElementById('resDays').innerText = days;
+            document.getElementById('resKey').value = randomKey;
+
+            const now = new Date();
+            document.getElementById('resDate').innerText = now.toISOString().split('T')[0] + " " + now.getHours() + ":" + now.getMinutes();
+
+            // Pindah halaman
+            document.getElementById('setup-page').style.display = 'none';
+            document.getElementById('result-page').style.display = 'block';
+        }
+
+        function copyKey() {
+            const key = document.getElementById('resKey');
+            key.select();
+            document.execCommand('copy');
+            alert("Key copied: " + key.value);
+        }
+    </script>
+</body>
+  </html>
